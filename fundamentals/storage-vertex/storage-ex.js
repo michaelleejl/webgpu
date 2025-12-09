@@ -9,7 +9,6 @@ const rand = (min, max) => {
     }
     return min + Math.random() * (max - min);
 };
-
 function createCircleVertices() {
     const radius = 1;
     const numSubdivisions = 24;
@@ -122,10 +121,10 @@ async function storageCircles() {
         values.set([rand(-0.9, 0.9), rand(-0.9, 0.9)], oOffset + 2 * i);
         values.set([rand(0, 1), rand(0, 1), rand(0, 1), 1], cOffset + 4 * i);
     }
-    console.log(values)
-    console.log(vOffset)
-    const vertices = createCircleVertices()
-    console.log(vertices.length)
+    console.log(values);
+    console.log(vOffset);
+    const vertices = createCircleVertices();
+    console.log(vertices.length);
     values.set(vertices, vOffset);
     let encoder = device.createCommandEncoder();
     let pass = encoder.beginRenderPass({
