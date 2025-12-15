@@ -26,14 +26,43 @@ async function pyramid() {
 
         @vertex fn vs_main(input: VertexInput) -> VertexOutput {
             var output: VertexOutput;
-            let alpha = cos(time);
-            let beta = sin(time);
-            var position = vec3f(
-                input.position.x,
-                alpha * input.position.y + beta * input.position.z,
-                alpha * input.position.z - beta * input.position.y,
-            );
-            output.position = vec4f(position.x, position.y * 2.0, position.z * 0.5 + 0.5, 1.0);
+            let c = cos(time);
+            let s = sin(time);
+
+            let cf = cos(-3.0 * 3.14 / 4.0);
+            let sf = sin(-3.0 * 3.14 / 4.0);
+
+            let S = transpose(mat4x4f(
+                0.3, 0.0, 0.0, 0.0,
+                0.0, 0.3, 0.0, 0.0,
+                0.0, 0.0, 0.3, 0.0,
+                0.0, 0.0, 0.0, 1.0
+            ));
+
+            let Ts = transpose(mat4x4f(
+                1.0, 0.0, 0.0, 0.4,
+                0.0, 1.0, 0.0, 0.0,
+                0.0, 0.0, 1.0, 0.0,
+                0.0, 0.0, 0.0, 1.0
+            ));
+
+            let R1 = transpose(mat4x4f(
+                c  ,  -s, 0.0, 0.0,
+                s  ,   c, 0.0, 0.0,
+                0.0, 0.0, 1.0, 0.0,
+                0.0, 0.0, 0.0, 1.0
+            ));
+
+            let R2 = transpose(mat4x4f(
+                1.0, 0.0, 0.0, 0.0,
+                0.0,  cf, -sf, 0.0,
+                0.0,  sf,  cf, 0.0,
+                0.0, 0.0, 0.0, 1.0
+            ));
+
+            let T =  R2 * R1 * Ts * S;
+            var position = (T * vec4f(input.position, 1.0)).xyz;
+            output.position = vec4f(position.x, 2.0 * position.y, position.z * 0.5 + 0.5, 1.0);
             output.color    = input.color;
             return output;
         }
