@@ -38,7 +38,7 @@ async function pyramid() {
                 alpha * input.position.y + beta * input.position.z,
                 alpha * input.position.z - beta * input.position.y,
             );
-            output.position = vec4f(position.x, position.y * 2.0, input.position.y, 1.0);
+            output.position = vec4f(position.x, position.y * 2.0, position.z * 0.5 + 0.5, 1.0);
             output.color    = input.color;
             return output;
         }
@@ -112,12 +112,27 @@ async function pyramid() {
             targets: [{format}]
         },
         layout: "auto",
+        depthStencil: {
+            format: "depth24plus", //????
+            depthWriteEnabled: true,
+            depthCompare: "less",
+            stencilReadMask: 0,
+            stencilWriteMask: 0,
+        }
     })
 
     const bindGroup = device.createBindGroup({
         layout: pipeline.getBindGroupLayout(0),
         entries: [{binding: 0, resource: timeBuffer}]
-    })
+    });
+
+    const depthTexture = device.createTexture({
+        size: [300, 150, 1],
+        format: "depth24plus",
+        usage: GPUTextureUsage.RENDER_ATTACHMENT,
+    });
+
+    const depthTextureView = depthTexture.createView();
 
     let angle = 0.0;
 
@@ -133,7 +148,13 @@ async function pyramid() {
                 loadOp: 'clear',
                 storeOp: 'store',
                 clearValue: [1.0, 1.0, 1.0, 1.0]
-            }]
+            }],
+            depthStencilAttachment: {
+                view: depthTextureView,
+                depthClearValue: 1.0,
+                depthLoadOp: 'clear',
+                depthStoreOp: 'store'
+            }
         })
 
         let timeData = new Float32Array(1);
