@@ -65,22 +65,27 @@ async function projection(){
                     0.0, 0.0, 0.0, 1.0
                 ));
 
-                let near = -1.0;
-                let far = 1.0;
+                let T = R2 * R1 * Ts * S;
+
+                let focalLength = 2.0;
+                let focalPoint = vec3f(0.0, 0.0, -5.0);
+                var pos = (T * vec4f(in.position, 2.0)).xyz - focalPoint;
+
+                let near = 0.1;
+                let far = 10.0;
                 let scale = 1.0;
                 let P = transpose(mat4x4f(
-                    scale, 0.0, 0.0, 0.0,
-                    0.0, 2.0*scale, 0.0, 0.0,
-                    0.0, 0.0, 1.0/(far - near), -near/(far - near),
-                    0.0, 0.0, 0.0, 1.0
+                    focalLength, 0.0, 0.0, 0.0,
+                    0.0, focalLength*2.0, 0.0, 0.0,
+                    0.0, 0.0, far/((far - near)), -(far*near)/((far - near)),
+                    0.0, 0.0, 1.0, 0.0
                 ));
 
-                let T =  P * R2 * R1 * Ts * S;
-
-                let pos = (T * vec4f(in.position, 1.0)).xyz;
+                // I want: between 0 and 1
+                // AFTER dividing by z (where z is a variable!!)
 
                 var out: VertexOutput;
-                out.position = vec4f(pos, 1.0);
+                out.position = P * vec4f(pos, 1.0);
                 out.color    = in.color;
                 return out;
             }
