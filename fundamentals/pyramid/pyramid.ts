@@ -187,7 +187,7 @@ async function pyramid() {
         })
 
         let timeData = new Float32Array(1);
-        timeData.set([angle % 360], 0);
+        timeData.set([angle], 0);
 
         pass.setBindGroup(0, bindGroup);
 
