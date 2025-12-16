@@ -76,6 +76,9 @@ async function projection() {
                     0.0, 0.0, 1.0, 0.0
                 ));
 
+                // I want: between 0 and 1
+                // AFTER dividing by z (where z is a variable!!)
+
                 var out: VertexOutput;
                 out.position = P * vec4f(pos, 1.0);
                 out.color    = in.color;
